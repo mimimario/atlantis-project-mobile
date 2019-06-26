@@ -57,7 +57,7 @@ const UserTab = createStackNavigator({
       backgroundColor: '#0091EA',
     },
     headerTintColor: '#fff',
-    title: 'Atlantis - Sign/Register',
+    title: 'Atlantis - SignIn/Register',
   },
 }
 );
