@@ -1,12 +1,12 @@
-import React from 'react'
+import React from 'react';
 import {View, Text} from 'react-native'
 
-export default class Home extends React.Component{
+export default class BackOfficeScreen extends React.Component{
     
     render(){
         return (
             <View>
-                <Text>A propos de moi</Text>
+                <Text>BackOffice</Text>
             </View>
         )
     }
