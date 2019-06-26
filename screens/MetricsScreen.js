@@ -88,9 +88,11 @@ export default class MetricsScreen extends React.Component{
                     <View style={styles.CalculatedMetricsContainer}>
                         <Text style={styles.Title}>Calculated data metrics</Text>
                         <Text style={styles.Subtitle}>Calcul type</Text>
-                        <Picker >
-                            <Picker.Item label="Test1" value="test1" />
-                        </Picker>
+                        <View style={styles.PickerContainer}>
+                            <Picker >
+                                <Picker.Item label="Test1" value="test1" />
+                            </Picker>
+                        </View>
                         <View style={styles.MetricsContainer}>
                             {this.renderObjectCalculatedMetrics()}
                         </View>
@@ -139,7 +141,8 @@ const styles = StyleSheet.create({
 
     PickerContainer:{
         borderColor: 'gray',
-        borderWidth: 1
+        borderWidth: 1,
+        marginTop: 10
     },
 
     RawMetricsContainer:{
@@ -161,12 +164,14 @@ const styles = StyleSheet.create({
 
     RawMetricWrapper:{
         borderColor: 'gray',
-        borderWidth: 1
+        borderWidth: 1,
+        marginTop: 10
     },
 
     CalculatedMetricWrapper:{
         borderColor: 'gray',
-        borderWidth: 1
+        borderWidth: 1,
+        marginTop: 10
     }
    
   });
