@@ -13,42 +13,47 @@ export default class CommandScreen extends React.Component{
 
     turnOn(){
         console.log("Turn on LED");
-        // fetch('http://localhost:59784/api/Actor', {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json',
-        //       },
-        //     body: JSON.stringify({
-        //        macAddress: "toto",
-        //        sensorName: "led",
-        //        action: "on", 
-        //     }),
-        // }).then((response) => response.json())
-        // .then((responseJson) => {
-        //     console.log("ResponseJson :");
-        //     console.log(responseJson);
-        // })
-        // .catch((error) => {
-        //     console.log("Y a erreur");
-        //     console.error(error);
-        // });
-    }
-
-    turnOff(){
-        console.log("Turn off LED");
-        fetch('http://localhost:59784/api/Actor', {
+        fetch('http://192.168.227.137:8080/atlantis/api-mobile/mobile/command', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
               },
             body: JSON.stringify({
-               macAddress: "toto",
-               sensorName: "led",
+               macAddress: "b8:27:eb:c8:37:f8",
+               actorName: "led",
+               action: "on", 
+            }),
+        })
+        .then((response) => {
+            console.log(JSON.stringify(response, null, 4))
+            return response.json();
+        })
+        .then((responseJson) => {
+            console.log("ResponseJson :");
+            console.log(responseJson);
+        })
+        .catch((error) => {
+            console.log("Y a erreur");
+            console.error(error);
+        });
+    }
+
+    turnOff(){
+        console.log("Turn off LED");
+        fetch('http://192.168.227.137:8080/atlantis/api-mobile/mobile/command', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+            body: JSON.stringify({
+               macAddress: "b8:27:eb:c8:37:f8",
+               actorName: "led",
                action: "off", 
             }),
-        }).then((response) => response.json())
+        })
+        .then((response) => response.json())
         .then((responseJson) => {
             console.log("ResponseJson :");
             console.log(responseJson);

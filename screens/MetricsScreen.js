@@ -34,7 +34,9 @@ export default class MetricsScreen extends React.Component{
                     metricValue: 900,
                     calculType: 'average'
                 }
-            }
+            },
+            selectedDevice: '',
+            selectedCalculType: ''
         };
     }
 
@@ -63,6 +65,51 @@ export default class MetricsScreen extends React.Component{
         })
     }
 
+    getMetricDevice(deviceValue, deviceIndex){
+        console.log(deviceValue);
+        console.log(deviceIndex);
+        //fetch('http://localhost:59784/api/Actor', {
+        //     method: 'POST',
+        //     headers: {
+        //         Accept: 'application/json',
+        //         'Content-Type': 'application/json',
+        //       },
+        //     body: JSON.stringify({
+        //        deviceName: deviceValue,
+        //     }),
+        // }).then((response) => response.json())
+        // .then((responseJson) => {
+        //     console.log("ResponseJson :");
+        //     console.log(responseJson);
+        // })
+        // .catch((error) => {
+        //     console.log("Y a erreur");
+        //     console.error(error);
+        // });
+    }
+
+    getCalculatedMetrics(calculValue, calculIndex){
+        console.log(calculValue);
+        //fetch('http://localhost:59784/api/Actor', {
+        //     method: 'POST',
+        //     headers: {
+        //         Accept: 'application/json',
+        //         'Content-Type': 'application/json',
+        //       },
+        //     body: JSON.stringify({
+        //        calculType: calculValue,
+        //     }),
+        // }).then((response) => response.json())
+        // .then((responseJson) => {
+        //     console.log("ResponseJson :");
+        //     console.log(responseJson);
+        // })
+        // .catch((error) => {
+        //     console.log("Y a erreur");
+        //     console.error(error);
+        // });
+    }
+
     render(){
         const data = [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
         return (
@@ -71,7 +118,13 @@ export default class MetricsScreen extends React.Component{
                     <View style={styles.DeviceContainer}>
                         <Text style={styles.Title}>Choose a device</Text>
                         <View style={styles.PickerContainer}>
-                            <Picker >
+                            <Picker 
+                                selectedValue={this.state.selectedDevice}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    this.getMetricDevice(itemValue, itemIndex);
+                                    this.setState({selectedDevice: itemValue});
+                                }}
+                            >
                                 {this.state.linkedDevices.map(function(name, index){
                                     return <Picker.Item label={name} key={index} value={name} /> 
                                 })}
@@ -82,15 +135,21 @@ export default class MetricsScreen extends React.Component{
                         <Text style={styles.Title}>Raw data metrics</Text>
                         <View style={styles.MetricsContainer}>
                             {this.renderObjectRawMetrics()}
-                            
                         </View>
                     </View>
                     <View style={styles.CalculatedMetricsContainer}>
                         <Text style={styles.Title}>Calculated data metrics</Text>
                         <Text style={styles.Subtitle}>Calcul type</Text>
                         <View style={styles.PickerContainer}>
-                            <Picker >
+                            <Picker
+                                selectedValue={this.state.selectedCalculType}
+                                onValueChange={(itemValue, itemIndex) => {
+                                    this.getCalculatedMetrics(itemValue, itemIndex);
+                                    this.setState({selectedCalculType: itemValue})
+                                }}    
+                            >
                                 <Picker.Item label="Test1" value="test1" />
+                                <Picker.Item label="Test2" value="test2" />
                             </Picker>
                         </View>
                         <View style={styles.MetricsContainer}>

@@ -9,7 +9,9 @@ export default class BackOfficeScreen extends React.Component{
             registeredDevices: ['ledBlue', 'ledGreen', 'ledRed'],
             registeredUsers: ['Sylvain', 'Théophane', 'Alexandre', 'Claire'],
             deviceSelected: '',
-            userSelected: ''
+            userSelected: '',
+            deviceType: ['presenceSensor', 'temperatureSensor', 'brightnessSensor', 'atmosphericPressureSensor', 'humiditySensor', 'soundLevelSensor', 'gpsSensor', 'co2Sensor', 'ledDevice', 'beeperDevice'],
+            typeSelected: ''
         };
     }
 
@@ -41,6 +43,15 @@ export default class BackOfficeScreen extends React.Component{
                     <View style={styles.UserContainer}>
                         <Text style={styles.Title}>Associate user / device</Text>
                         <View>
+                            <View style={styles.PickerContainer}>
+                                <Picker selectedValue={this.state.deviceType} onValueChange={(type, deviceIndex) => {
+                                    this.setState({typeSelected: type})
+                                }}>
+                                    {this.state.deviceType.map(function(name, index){
+                                        return <Picker.Item label={name} key={index} value={name} /> 
+                                    })}
+                                </Picker>
+                            </View>
                             <View style={styles.PickerContainer}>
                                 <Picker selectedValue={this.state.deviceSelected} onValueChange={(deviceValue, deviceIndex) => {
                                     this.setState({deviceSelected: deviceValue})
