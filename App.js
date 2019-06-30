@@ -5,20 +5,19 @@ import HomeScreen from './screens/HomeScreen'
 import MetricsScreen from './screens/MetricsScreen'
 import CommandScreen from './screens/CommandScreen'
 import UserScreen from './screens/UserScreen'
-import BackOfficeScreen from './screens/BackOfficeScreen'
 
 const HomeTab = createStackNavigator({
   Home: HomeScreen,
-},
-{
-  defaultNavigationOptions:{
-    headerStyle: {
-      backgroundColor: '#0091EA',
-    },
-    headerTintColor: '#fff',
-    title: 'Atlantis',
   },
-}
+  {
+    defaultNavigationOptions:{
+      headerStyle: {
+        backgroundColor: '#0091EA',
+      },
+      headerTintColor: '#fff',
+      title: 'Atlantis',
+    },
+  }
 );
 
 const MetricTab = createStackNavigator({
@@ -62,27 +61,12 @@ const UserTab = createStackNavigator({
 }
 );
 
-const BackOfficeTab = createStackNavigator({
-  BackOffice: BackOfficeScreen,
-},
-{
-  defaultNavigationOptions:{
-    headerStyle: {
-      backgroundColor: '#0091EA',
-    },
-    headerTintColor: '#fff',
-    title: 'Atlantis - Administrate User/Device',
-  },
-}
-);
-
 const MainApp = createBottomTabNavigator(
   {
     Home: HomeTab,
     Metric: MetricTab,
     Command: CommandTab,
-    User: UserTab,
-    BackOffice: BackOfficeTab
+    User: UserTab
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -110,12 +94,6 @@ const MainApp = createBottomTabNavigator(
           return (
             <Image
               source={ require('./assets/man-user.png') }
-              style={{ width: 20, height: 20 }} />
-          );
-        }if(routeName === 'BackOffice'){
-          return (
-            <Image
-              source={ require('./assets/manager.png') }
               style={{ width: 20, height: 20 }} />
           );
         }

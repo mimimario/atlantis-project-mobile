@@ -5,61 +5,76 @@ export default class CommandScreen extends React.Component{
 
     constructor (props){
         super(props)
+        const {navigation} = this.props;
         this.state = {
-            linkedDevices: ['ledBlue', 'ledGreen', 'ledRed'],
-            deviceSelected: ''
+            linkedDevices: [],
+            deviceSelected: '',
+            userName: global.UserName
         };
+    }
+
+    componentWillMount(){
+        fetch('http://192.168.227.137:15080/atlantis/api-mobile/mobile/getAllDevicesFromUser', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+              },
+            body: this.state.userName,
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            var devices = responseJson.DevicesFromOneUser;
+            this.setState({selectedDevice: devices[0]})
+            this.setState({linkedDevices: responseJson.DevicesFromOneUser})
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     }
 
     turnOn(){
         console.log("Turn on LED");
-        fetch('http://192.168.227.137:8080/atlantis/api-mobile/mobile/command', {
+        fetch('http://192.168.227.137:15080/atlantis/api-mobile/mobile/command', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
               },
             body: JSON.stringify({
-               macAddress: "b8:27:eb:c8:37:f8",
+               macAddress: "b8:27:eb:9d:62:ad",
                actorName: "led",
                action: "on", 
             }),
         })
         .then((response) => {
-            console.log(JSON.stringify(response, null, 4))
             return response.json();
         })
         .then((responseJson) => {
-            console.log("ResponseJson :");
             console.log(responseJson);
         })
         .catch((error) => {
-            console.log("Y a erreur");
             console.error(error);
         });
     }
 
     turnOff(){
         console.log("Turn off LED");
-        fetch('http://192.168.227.137:8080/atlantis/api-mobile/mobile/command', {
+        fetch('http://192.168.227.137:15080/atlantis/api-mobile/mobile/command', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
               },
             body: JSON.stringify({
-               macAddress: "b8:27:eb:c8:37:f8",
+               macAddress: "b8:27:eb:9d:62:ad",
                actorName: "led",
                action: "off", 
             }),
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log("ResponseJson :");
             console.log(responseJson);
         })
         .catch((error) => {
-            console.log("Y a erreur");
             console.error(error);
         });
     }

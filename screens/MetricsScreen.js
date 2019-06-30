@@ -1,28 +1,25 @@
 import React from 'react';
-import {View, Text, Picker, StyleSheet, ScrollView} from 'react-native'
+import {View, Text, Picker, StyleSheet, ScrollView, Button} from 'react-native'
 import { AreaChart, Grid } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
 
 export default class MetricsScreen extends React.Component{
+
+    
+
+    static navigationsOptions = {
+        title: "Metrics"
+    };
+    
     
     constructor (props){
-        super(props)
+        super(props);
+        const {navigation} = this.props;
+        //global.UserName = this.props.navigation.state.params.name ? this.props.navigation.state.params.name : null;
+
         this.state = {
-            linkedDevices: ['ledBlue', 'ledGreen', 'ledRed'],
-            rawMetrics: {
-                metric1: {
-                    deviceName: 'ledBlue',
-                    nameMetric: 'blabla',
-                    metricValue: 38,
-                    metricType: 'temperature'
-                },
-                metric2: {
-                    deviceName: 'ledBlue',
-                    nameMetric: 'blibli',
-                    metricValue: 42,
-                    metricType: 'temperature'
-                },
-            },
+            linkedDevices: [],
+            rawMetrics: [],
             calculatedMetrics: {
                 calculatedMetrics1: {
                     deviceName: 'ledBlue',
@@ -36,18 +33,36 @@ export default class MetricsScreen extends React.Component{
                 }
             },
             selectedDevice: '',
-            selectedCalculType: ''
+            selectedCalculType: '',
+            userName: global.UserName ? global.UserName : this.props.navigation.navigate({ routeName: 'User'})
         };
+    }
+
+    componentWillMount(){
+        fetch('http://192.168.227.137:15080/atlantis/api-mobile/mobile/getAllDevicesFromUser', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+              },
+            body: this.state.userName,
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            var devices = responseJson.DevicesFromOneUser;
+            this.setState({selectedDevice: devices[0]})
+            this.setState({linkedDevices: responseJson.DevicesFromOneUser})
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     }
 
     renderObjectRawMetrics(){
         return Object.entries(this.state.rawMetrics).map(([key, value], i) => {
 			return (
 				<View key={key} style={styles.RawMetricWrapper}>
-					<Text>Device name is: {value.deviceName}</Text>
-					<Text>Metric name is : {value.nameMetric}</Text>
-                    <Text>Metric value is : {value.metricValue}</Text>
-                    <Text>Metric type is : {value.metricType}</Text>
+					<Text>Metric name is : {value.name}</Text>
+                    <Text>Metric value is : {value.mectricValue}</Text>
+                    <Text>Metric type is : {value.SensorType}</Text>
 				</View>
 			)
 		})
@@ -66,26 +81,23 @@ export default class MetricsScreen extends React.Component{
     }
 
     getMetricDevice(deviceValue, deviceIndex){
-        console.log(deviceValue);
-        console.log(deviceIndex);
-        //fetch('http://localhost:59784/api/Actor', {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json',
-        //       },
-        //     body: JSON.stringify({
-        //        deviceName: deviceValue,
-        //     }),
-        // }).then((response) => response.json())
-        // .then((responseJson) => {
-        //     console.log("ResponseJson :");
-        //     console.log(responseJson);
-        // })
-        // .catch((error) => {
-        //     console.log("Y a erreur");
-        //     console.error(error);
-        // });
+        console.log(this.state.selectedDevice)
+        fetch('http://192.168.227.137:15080/atlantis/api-mobile/mobile/metricsFromDevice', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+              },
+            body: deviceValue,
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({rawMetrics: responseJson})
+            //this.setState({linkedDevices: responseJson.DevicesFromOneUser})
+        })
+        .catch((error) => {
+            console.log("Y a erreur");
+            console.error(error);
+        });
     }
 
     getCalculatedMetrics(calculValue, calculIndex){
@@ -112,6 +124,7 @@ export default class MetricsScreen extends React.Component{
 
     render(){
         const data = [ 50, 10, 40, 95, -4, -24, 85, 91, 35, 53, -53, 24, 50, -20, -80 ]
+        const { navigate } = this.props.navigation;
         return (
             <ScrollView>
                 <View style={styles.MainContainer}>

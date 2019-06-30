@@ -4,7 +4,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native'
 export default class HomeScreen extends React.Component{
 
     static navigationsOptions = {
-        title: "Home Page"
+        title: "Home"
     };
     
     render(){

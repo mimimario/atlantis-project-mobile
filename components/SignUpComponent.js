@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native'
+import {View, StyleSheet, Alert} from 'react-native'
 import { Input, Button } from 'react-native-elements'
 
 export default class SignUpComponent extends React.Component{
@@ -7,33 +7,42 @@ export default class SignUpComponent extends React.Component{
     constructor (props){
         super(props)
         this.state = {
-            userEmail: '',
+            userName: '',
             userPassword: ''
         }
     }
 
     signUp(){
-        var userEmail = this.state.userEmail;
+        var userName = this.state.userName;
         var userPassword = this.state.userPassword;
-        //fetch('http://localhost:59784/api/Actor', {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json',
-        //       },
-        //     body: JSON.stringify({
-        //        userEmail: userEmail,
-        //        userPassword: userPassword, 
-        //     }),
-        // }).then((response) => response.json())
-        // .then((responseJson) => {
-        //     console.log("ResponseJson :");
-        //     console.log(responseJson);
-        // })
-        // .catch((error) => {
-        //     console.log("Y a erreur");
-        //     console.error(error);
-        // });
+        fetch('http://192.168.227.137:15080/atlantis/api-mobile/mobile/createUser', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+            body: JSON.stringify({
+               name: userName,
+               password: userPassword, 
+            }),
+        })
+        .then((response) => response.text())
+        .then((responseJson) => {
+            console.log(responseJson);
+            Alert.alert(
+                'Create user',
+                responseJson,
+                [
+                    {text: 'Ok', onPress: () => this.props.navigation.navigate('Home')}
+                ]
+            )
+            // if(responseJson.sucess === true){
+            //     console.log("coucou")
+            // } else{
+            //     console.log(responseJson.message);
+            // }
+        })
+        .done();
     }
 
     render(){
@@ -41,12 +50,13 @@ export default class SignUpComponent extends React.Component{
             <View style={styles.MainContainer}>
                 <View style={styles.Form}>
                     <Input
-                        placeholder='user email'
-                        onChangeText={(text) => this.setState({userEmail: text})}
+                        placeholder='user name'
+                        onChangeText={(text) => this.setState({userName: text})}
                     />
                     <Input
                         placeholder='user password'
                         onChangeText={(text) => this.setState({userPassword: text})}
+                        secureTextEntry={true}
                     />
                     <Button
                         title="Sign Up"
