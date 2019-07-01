@@ -9,7 +9,7 @@ export default class CommandScreen extends React.Component{
         this.state = {
             linkedDevices: [],
             deviceSelected: '',
-            userName: global.UserName
+            userName: global.UserName ? global.UserName : this.props.navigation.navigate({ routeName: 'User'}),
         };
     }
 
@@ -45,15 +45,6 @@ export default class CommandScreen extends React.Component{
                action: "on", 
             }),
         })
-        .then((response) => {
-            return response.json();
-        })
-        .then((responseJson) => {
-            console.log(responseJson);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
     }
 
     turnOff(){
@@ -70,13 +61,6 @@ export default class CommandScreen extends React.Component{
                action: "off", 
             }),
         })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
     }
     
     render(){

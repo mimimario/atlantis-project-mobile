@@ -2,6 +2,8 @@ import React from 'react';
 import {View, Text, Picker, StyleSheet, ScrollView, Button} from 'react-native'
 import { AreaChart, Grid } from 'react-native-svg-charts'
 import * as shape from 'd3-shape'
+import DatePicker from 'react-native-datepicker' 
+import TimePicker from 'react-native-simple-time-picker';
 
 export default class MetricsScreen extends React.Component{
 
@@ -20,21 +22,40 @@ export default class MetricsScreen extends React.Component{
         this.state = {
             linkedDevices: [],
             rawMetrics: [],
-            calculatedMetrics: {
-                calculatedMetrics1: {
-                    deviceName: 'ledBlue',
-                    metricValue: 1200,
-                    calculType: 'average'
+            calculatedMetrics: [],
+            metricsCalculType: [
+                {
+                    "name": "Average minute",
+                    "id": "1"
                 },
-                calculatedMetrics2: {
-                    deviceName: 'ledBlue',
-                    metricValue: 900,
-                    calculType: 'average'
+                {
+                    "name": "Average hour",
+                    "id": "2"
+                },
+                {
+                    "name": "Average day",
+                    "id": "3"
+                },
+                {
+                    "name": "Average minute",
+                    "id": "4"
                 }
-            },
+            ],
             selectedDevice: '',
             selectedCalculType: '',
-            userName: global.UserName ? global.UserName : this.props.navigation.navigate({ routeName: 'User'})
+            userName: global.UserName ? global.UserName : this.props.navigation.navigate({ routeName: 'User'}),
+            date: "2019-07-01",
+            dateStart: "",
+            dateEnd: "",
+            idCalculType: 0,
+            macAddress: "",
+            selectedHours: 0,
+            selectedMinutes: 0,
+            startHour : 0,
+            startMinutes: 0,
+            endHour: 0,
+            endMinutes: 0,
+            valueCalculatedMetrics: []
         };
     }
 
@@ -54,18 +75,6 @@ export default class MetricsScreen extends React.Component{
         .catch((error) => {
             console.error(error);
         });
-    }
-
-    renderObjectRawMetrics(){
-        return Object.entries(this.state.rawMetrics).map(([key, value], i) => {
-			return (
-				<View key={key} style={styles.RawMetricWrapper}>
-					<Text>Metric name is : {value.name}</Text>
-                    <Text>Metric value is : {value.mectricValue}</Text>
-                    <Text>Metric type is : {value.SensorType}</Text>
-				</View>
-			)
-		})
     }
 
     renderObjectCalculatedMetrics(){
@@ -90,6 +99,7 @@ export default class MetricsScreen extends React.Component{
             body: deviceValue,
         }).then((response) => response.json())
         .then((responseJson) => {
+            console.log("RAW DATA :");
             console.log(responseJson);
             this.setState({rawMetrics: responseJson})
             //this.setState({linkedDevices: responseJson.DevicesFromOneUser})
@@ -100,26 +110,34 @@ export default class MetricsScreen extends React.Component{
         });
     }
 
-    getCalculatedMetrics(calculValue, calculIndex){
-        console.log(calculValue);
-        //fetch('http://localhost:59784/api/Actor', {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json',
-        //       },
-        //     body: JSON.stringify({
-        //        calculType: calculValue,
-        //     }),
-        // }).then((response) => response.json())
-        // .then((responseJson) => {
-        //     console.log("ResponseJson :");
-        //     console.log(responseJson);
-        // })
-        // .catch((error) => {
-        //     console.log("Y a erreur");
-        //     console.error(error);
-        // });
+
+    getCalculatedMetrics(){
+        
+        var dateStart = this.state.dateStart + " " + this.state.startHour + ":" + this.state.startMinutes;
+        var dateEnd = this.state.dateEnd + " " + this.state.endHour + ":" + this.state.endMinutes;
+        var idCalculType = this.state.idCalculType;
+        var macAddress = 'b8:27:eb:c8:37:f8';
+        console.log(dateStart);
+        console.log(dateEnd);
+        console.log(idCalculType);
+        console.log(macAddress);
+        var Url = 'http://192.168.227.137:15080/atlantis/api-mobile/mobile/getCalcMetric/' + macAddress + '/' + dateStart + '/' + dateEnd + '/' + idCalculType;
+        fetch(Url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+              },
+        }).then((response) => response.json())
+        .then((responseJson) => {
+            console.log("ResponseJson :");
+            console.log(responseJson);
+            this.setState({calculatedMetrics: responseJson})
+            this.setState({valueCalculatedMetrics: responseJson.value})
+        })
+        .catch((error) => {
+            console.log("Y a erreur");
+            console.error(error);
+        });
     }
 
     render(){
@@ -147,22 +165,79 @@ export default class MetricsScreen extends React.Component{
                     <View style={styles.RawMetricsContainer}>
                         <Text style={styles.Title}>Raw data metrics</Text>
                         <View style={styles.MetricsContainer}>
-                            {this.renderObjectRawMetrics()}
+                        {this.state.rawMetrics.map(function(name, index){
+                            return (
+                            <View key={index} style={styles.RawMetricWrapper}>
+                                <Text>Metric date is : {name.metricDate}</Text>
+                                <Text>Metric value is : {name.metricValue}</Text>
+                            </View>
+                            )
+                            })}
                         </View>
                     </View>
                     <View style={styles.CalculatedMetricsContainer}>
                         <Text style={styles.Title}>Calculated data metrics</Text>
+                        <DatePicker
+                            date={this.state.date}
+                            mode="date"
+                            placeholder="Select Start Date"
+                            format="YYYY-MM-DD"
+                            minDate="2019-07-01"
+                            maxDate="2019-07-02"
+                            confirmBtnText="Confirm"
+                            cancelBtnText="Cancel"
+                            onDateChange={(date) => this.setState({dateStart: date})}
+                        />
+                        <TimePicker
+                            selectedHours={selectedHours}
+                            selectedMinutes={selectedMinutes}
+                            onChange={(hours, minutes) => this.setState({ 
+                            startHour: hours, startMinutes: minutes 
+                            })}
+                        />
+                        <DatePicker
+                            date={this.state.date}
+                            mode="date"
+                            placeholder="Select End Date"
+                            format="YYYY-MM-DD"
+                            minDate="2019-07-01"
+                            maxDate="2019-07-02"
+                            confirmBtnText="Confirm"
+                            cancelBtnText="Cancel"
+                            onDateChange={(date) => this.setState({dateEnd: date})}
+                        />
+                        <TimePicker
+                            selectedHours={selectedHours}
+                            selectedMinutes={selectedMinutes}
+                            onChange={(hours, minutes) => this.setState({ 
+                            endHour: hours, endMinutes: minutes 
+                            })}
+                        />
                         <Text style={styles.Subtitle}>Calcul type</Text>
                         <View style={styles.PickerContainer}>
                             <Picker
                                 selectedValue={this.state.selectedCalculType}
                                 onValueChange={(itemValue, itemIndex) => {
-                                    this.getCalculatedMetrics(itemValue, itemIndex);
+                                    console.log(itemIndex)
                                     this.setState({selectedCalculType: itemValue})
+                                    if(itemValue == "Average minute"){
+                                        this.setState({idCalculType: "1"})
+                                    }
+                                    if(itemValue == "Average hour"){
+                                        this.setState({idCalculType: "2"})
+                                    }
+                                    if(itemValue == "Average day"){
+                                        this.setState({idCalculType: "3"})
+                                    }
+                                    if(itemValue == "Average minute"){
+                                        this.setState({idCalculType: "4"})
+                                    }
+                                    this.getCalculatedMetrics();
                                 }}    
                             >
-                                <Picker.Item label="Test1" value="test1" />
-                                <Picker.Item label="Test2" value="test2" />
+                                {this.state.metricsCalculType.map(function(name, index){
+                                    return <Picker.Item label={name.name} key={index} value={name.name} index={name.id} /> 
+                                })}
                             </Picker>
                         </View>
                         <View style={styles.MetricsContainer}>
@@ -173,7 +248,7 @@ export default class MetricsScreen extends React.Component{
                         <Text style={styles.Title}>Calculated metric graph</Text>
                         <AreaChart
                             style={{ height: 200 }}
-                            data={ data }
+                            data={ valueCalculatedMetrics }
                             contentInset={{ top: 30, bottom: 30 }}
                             curve={ shape.curveNatural }
                             svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
